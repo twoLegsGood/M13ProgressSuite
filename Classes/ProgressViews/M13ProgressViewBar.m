@@ -34,9 +34,12 @@
 @property (nonatomic, retain) CALayer *indeterminateLayer;
 /**The action currently being performed.*/
 @property (nonatomic, assign) M13ProgressViewAction currentAction;
+
 @end
 
-@implementation M13ProgressViewBar
+@implementation M13ProgressViewBar {
+    NSNumberFormatter *formatter;
+}
 
 #pragma mark Initalization and setup
 
@@ -69,6 +72,10 @@
 
 - (void)setup
 {
+    
+    formatter = [NSNumberFormatter new];
+    [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+    
     //Set own background color
     self.backgroundColor = [UIColor clearColor];
     
@@ -192,7 +199,7 @@
     if (animated == NO) {
         if (_displayLink) {
             //Kill running animations
-            [_displayLink invalidate];
+            [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
             _displayLink = nil;
         }
         [super setProgress:progress animated:NO];
@@ -203,7 +210,7 @@
         _animationToValue = progress;
         if (!_displayLink) {
             //Create and setup the display link
-            [self.displayLink invalidate];
+            [self.displayLink removeFromRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
             self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(animateProgress:)];
             [self.displayLink addToRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
         } /*else {
@@ -218,7 +225,7 @@
         CGFloat dt = (displayLink.timestamp - _animationStartTime) / self.animationDuration;
         if (dt >= 1.0) {
             //Order is important! Otherwise concurrency will cause errors, because setProgress: will detect an animation in progress and try to stop it by itself. Once over one, set to actual progress amount. Animation is over.
-            [self.displayLink invalidate];
+            [self.displayLink removeFromRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
             self.displayLink = nil;
             [super setProgress:_animationToValue animated:NO];
             [self setNeedsDisplay];
@@ -236,7 +243,9 @@
 {
     if (action == M13ProgressViewActionNone && _currentAction != M13ProgressViewActionNone) {
         _currentAction = action;
-        _percentageLabel.string = [_percentageFormatter stringFromNumber:[NSNumber numberWithFloat:self.progress]];
+//        _percentageLabel.string = [_percentageFormatter stringFromNumber:[NSNumber numberWithFloat:self.progress]];
+        NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:(long)(_totalInspectionLength - (ceil(_totalInspectionLength*self.progress)))]];
+        _percentageLabel.string = [NSString stringWithFormat:@"%@ ft",formatted];
         [self setNeedsDisplay];
         [CATransaction begin];
         CABasicAnimation *barAnimation = [self barColorAnimation];
@@ -359,7 +368,9 @@
         //Remove all animations
         [_indeterminateLayer removeAnimationForKey:@"position"];
         //Reset progress text
-        _percentageLabel.string = [_percentageFormatter stringFromNumber:[NSNumber numberWithFloat:self.progress]];
+//        _percentageLabel.string = [_percentageFormatter stringFromNumber:[NSNumber numberWithFloat:self.progress]];
+        NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:(long)(_totalInspectionLength - (ceil(_totalInspectionLength*self.progress)))]];
+        _percentageLabel.string = [NSString stringWithFormat:@"%@ ft",formatted];
     }
 }
 
@@ -586,7 +597,9 @@
         _percentageLabel.string = @"✕";
     } else if (_currentAction == M13ProgressViewActionNone) {
         if (!self.indeterminate) {
-            _percentageLabel.string = [_percentageFormatter stringFromNumber:[NSNumber numberWithFloat:self.progress]];
+//            _percentageLabel.string = [_percentageFormatter stringFromNumber:[NSNumber numberWithFloat:self.progress]];
+            NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:(long)(_totalInspectionLength - (ceil(_totalInspectionLength*self.progress)))]];
+            _percentageLabel.string = [NSString stringWithFormat:@"%@ ft",formatted];
         } else {
             _percentageLabel.string = @"∞";
         }
