@@ -1,5 +1,5 @@
 //
-//  BarViewController.h
+//  M13ProgressViewBar.h
 //  M13ProgressView
 //
 /*Copyright (c) 2013 Brandon McQuilkin
@@ -11,27 +11,41 @@
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#import <UIKit/UIKit.h>
+#import "M13ProgressView.h"
 
-#import "M13ProgressViewBar.h"
+typedef enum {
+    M13ProgressViewBarPercentagePositionLeft,
+    M13ProgressViewBarPercentagePositionRight,
+    M13ProgressViewBarPercentagePositionTop,
+    M13ProgressViewBarPercentagePositionBottom,
+} M13ProgressViewBarPercentagePosition;
 
-@interface BarViewController : UIViewController
+typedef enum {
+    M13ProgressViewBarProgressDirectionLeftToRight,
+    M13ProgressViewBarProgressDirectionBottomToTop,
+    M13ProgressViewBarProgressDirectionRightToLeft,
+    M13ProgressViewBarProgressDirectionTopToBottom
+} M13ProgressViewBarProgressDirection;
 
-@property (nonatomic, retain) IBOutlet M13ProgressViewBar *progressViewVertical;
-@property (nonatomic, retain) IBOutlet M13ProgressViewBar *progressViewHorizontal;
-@property (nonatomic, retain) IBOutlet UISlider *progressSlider;
-@property (nonatomic, retain) IBOutlet UIButton *animateButton;
-@property (nonatomic, retain) IBOutlet UISegmentedControl *iconControl;
-@property (nonatomic, retain) IBOutlet UISwitch *indeterminateSwitch;
-@property (nonatomic, retain) IBOutlet UISwitch *showPercentageSwitch;
-@property (nonatomic, retain) IBOutlet UISegmentedControl *positionControl;
-@property (nonatomic, retain) IBOutlet UISegmentedControl *directionControl;
+/**A replacement for UIProgressBar.*/
+@interface M13ProgressViewBar : M13ProgressView
 
-- (IBAction)animateProgress:(id)sender;
-- (IBAction)progressChanged:(id)sender;
-- (IBAction)iconChanged:(id)sender;
-- (IBAction)indeterminateChanged:(id)sender;
-- (IBAction)showPercentage:(id)sender;
-- (IBAction)percentagePositionChangeed:(id)sender;
-- (IBAction)directioChanged:(id)sender;
+/**@name Appearance*/
+/**The direction of progress. (What direction the fill proceeds in.)*/
+@property (nonatomic, assign) M13ProgressViewBarProgressDirection progressDirection;
+/**The thickness of the progress bar.*/
+@property (nonatomic, assign) CGFloat progressBarThickness;
+/**@name Actions*/
+/**The color the bar changes to for the success action.*/
+@property (nonatomic, retain) UIColor *successColor;
+/**The color the bar changes to for the failure action.*/
+@property (nonatomic, retain) UIColor *failureColor;
+/**@name Percentage*/
+/**Wether or not to show percentage text. If shown exterior to the progress bar, the progress bar is shifted to make room for the text.*/
+@property (nonatomic, assign) BOOL showPercentage;
+/**The location of the percentage in comparison to the progress bar.*/
+@property (nonatomic, assign) M13ProgressViewBarPercentagePosition percentagePosition;
+
+@property NSInteger totalInspectionLength;
+
 @end
