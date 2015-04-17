@@ -397,7 +397,7 @@
                 //Align the bar with the top of self
                 progressFrame.origin = CGPointMake(0, 0);
                 //Align the label with the bottom of self
-                labelFrame.origin = CGPointMake(0, labelProgressBufferDistance + progressFrame.size.height);
+                labelFrame.origin = CGPointMake(0, (labelProgressBufferDistance + progressFrame.size.height) * 0.5f);
                 //Set frames of progress and label
                 _progressBar.frame = progressFrame;
                 _percentageLabel.frame = labelFrame;
